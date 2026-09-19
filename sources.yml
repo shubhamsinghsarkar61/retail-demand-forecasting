@@ -1,9 +1,0 @@
-version: 2
-
-sources:
-  - name: raw
-    database: sage-sylph-508507-m2
-    schema: raw
-    tables:
-      - name: sales_train_validation
-      - name: sales_train_evaluation

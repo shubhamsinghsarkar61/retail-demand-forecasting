@@ -1,0 +1,15 @@
+version: 2
+
+sources:
+  - name: raw
+    database: sage-sylph-508507-m2
+    schema: m5_raw
+
+    tables:
+      - name: calendar
+
+      - name: sell_prices
+
+      - name: sales_train_validation
+
+      - name: sales_train_evaluation
