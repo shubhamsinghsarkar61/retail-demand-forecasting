@@ -443,6 +443,107 @@ with trend_col2:
         "Demand Change",
         f"{trend_change:+.2f}"
     )
+    # ============================================================
+# RECOMMENDED STOCK
+# ============================================================
+
+st.subheader("📦 Recommended Stock")
+
+recommended_stock = selected_forecast["yhat"].sum()
+
+recommended_stock = max(
+    0,
+    round(recommended_stock)
+)
+
+safety_stock = round(
+    recommended_stock * 0.20
+)
+
+total_recommended_stock = (
+    recommended_stock + safety_stock
+)
+
+stock_col1, stock_col2, stock_col3 = st.columns(3)
+
+with stock_col1:
+
+    st.metric(
+        "Forecasted Demand",
+        f"{recommended_stock} units"
+    )
+
+with stock_col2:
+
+    st.metric(
+        "Safety Stock",
+        f"{safety_stock} units"
+    )
+
+with stock_col3:
+
+    st.metric(
+        "Recommended Stock",
+        f"{total_recommended_stock} units"
+    )
+
+    # ============================================================
+# RESTOCKING RECOMMENDATION
+# ============================================================
+
+st.subheader("🔄 Restocking Recommendation")
+
+if total_recommended_stock > 0:
+
+    restock_status = "Restock Recommended"
+
+    restock_message = (
+        f"Maintain approximately "
+        f"{total_recommended_stock} units "
+        f"for the selected forecast period."
+    )
+
+else:
+
+    restock_status = "No Restock Required"
+
+    restock_message = (
+        "No additional stock is recommended "
+        "for the selected forecast period."
+    )
+
+st.info(
+    f"**{restock_status}**\n\n"
+    f"{restock_message}"
+)
+# ============================================================
+# RESTOCK PRIORITY
+# ============================================================
+
+st.subheader("🚨 Restock Priority")
+
+if total_recommended_stock >= 100:
+    priority = "High"
+    priority_message = "High stock requirement — prioritize replenishment."
+
+elif total_recommended_stock >= 50:
+    priority = "Medium"
+    priority_message = "Moderate stock requirement — monitor inventory."
+
+else:
+    priority = "Low"
+    priority_message = "Low stock requirement — routine monitoring is sufficient."
+
+priority_col1, priority_col2 = st.columns(2)
+
+with priority_col1:
+    st.metric(
+        "Priority",
+        priority
+    )
+
+with priority_col2:
+    st.info(priority_message)
 
 # ============================================================
 # ACTUAL VS FORECAST
