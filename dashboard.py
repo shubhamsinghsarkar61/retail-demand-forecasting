@@ -544,6 +544,128 @@ with priority_col1:
 
 with priority_col2:
     st.info(priority_message)
+    # ============================================================
+# WHAT-IF SCENARIO SIMULATOR
+# ============================================================
+
+st.subheader("🔮 What-If Scenario Simulator")
+
+scenario_col1, scenario_col2 = st.columns(2)
+
+with scenario_col1:
+
+    price_change = st.slider(
+        "💰 Price Change (%)",
+        min_value=-30,
+        max_value=30,
+        value=0,
+        step=5
+    )
+
+with scenario_col2:
+
+    promotion_impact = st.slider(
+        "📢 Promotion Impact (%)",
+        min_value=0,
+        max_value=50,
+        value=0,
+        step=5
+    )
+    # ============================================================
+# WHAT-IF DEMAND CALCULATION
+# ============================================================
+
+base_demand = selected_forecast["yhat"].sum()
+
+price_effect = 1 - (price_change / 100)
+
+promotion_effect = 1 + (promotion_impact / 100)
+
+what_if_demand = (
+    base_demand
+    * price_effect
+    * promotion_effect
+)
+
+what_if_demand = max(
+    0,
+    round(what_if_demand)
+)
+
+st.markdown("### 📊 Scenario Result")
+
+result_col1, result_col2 = st.columns(2)
+
+with result_col1:
+
+    st.metric(
+        "Base Forecast",
+        f"{round(base_demand)} units"
+    )
+
+with result_col2:
+
+    st.metric(
+        "What-If Forecast",
+        f"{what_if_demand} units"
+    )
+    # ============================================================
+# WHAT-IF FORECAST COMPARISON
+# ============================================================
+
+st.markdown("### 📈 Base vs What-If Forecast")
+
+comparison_df = selected_forecast[
+    ["ds", "yhat"]
+].copy()
+
+comparison_df["What-If Forecast"] = (
+    comparison_df["yhat"]
+    * price_effect
+    * promotion_effect
+)
+
+comparison_df = comparison_df.rename(
+    columns={
+        "ds": "Date",
+        "yhat": "Base Forecast"
+    }
+)
+
+st.line_chart(
+    comparison_df.set_index("Date")[
+        ["Base Forecast", "What-If Forecast"]
+    ]
+)
+# ============================================================
+# SCENARIO IMPACT SUMMARY
+# ============================================================
+
+demand_change = what_if_demand - round(base_demand)
+
+if demand_change > 0:
+
+    impact_message = (
+        f"Demand may increase by approximately "
+        f"{demand_change} units under this scenario."
+    )
+
+elif demand_change < 0:
+
+    impact_message = (
+        f"Demand may decrease by approximately "
+        f"{abs(demand_change)} units under this scenario."
+    )
+
+else:
+
+    impact_message = (
+        "No significant demand change under the current scenario."
+    )
+
+st.info(
+    f"**Scenario Impact:** {impact_message}"
+)
 
 # ============================================================
 # ACTUAL VS FORECAST
