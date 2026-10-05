@@ -666,6 +666,197 @@ else:
 st.info(
     f"**Scenario Impact:** {impact_message}"
 )
+# ============================================================
+# HOLIDAY / EVENT IMPACT
+# ============================================================
+
+st.markdown("### 📅 Holiday / Event Impact")
+
+holiday_impact = st.slider(
+    "Holiday / Event Demand Impact (%)",
+    min_value=0,
+    max_value=50,
+    value=0,
+    step=5
+)
+
+holiday_effect = 1 + (holiday_impact / 100)
+
+advanced_what_if_demand = (
+    what_if_demand * holiday_effect
+)
+
+advanced_what_if_demand = max(
+    0,
+    round(advanced_what_if_demand)
+)
+
+st.metric(
+    "Adjusted Demand with Event Impact",
+    f"{advanced_what_if_demand} units"
+)
+# ============================================================
+# LEAD TIME ADJUSTMENT
+# ============================================================
+
+st.markdown("### 🚚 Supplier Lead Time")
+
+lead_time_days = st.slider(
+    "Supplier Lead Time (Days)",
+    min_value=1,
+    max_value=30,
+    value=7,
+    step=1
+)
+
+daily_demand = advanced_what_if_demand / max(
+    1,
+    len(selected_forecast)
+)
+
+lead_time_stock = round(
+    daily_demand * lead_time_days
+)
+
+st.metric(
+    "Lead Time Stock Requirement",
+    f"{lead_time_stock} units"
+)
+# ============================================================
+# INVENTORY IMPACT
+# ============================================================
+
+st.markdown("### 📦 Inventory Impact")
+
+current_inventory = st.number_input(
+    "Current Inventory (Units)",
+    min_value=0,
+    value=100,
+    step=10
+)
+
+required_inventory = (
+    advanced_what_if_demand
+    + lead_time_stock
+)
+
+inventory_gap = (
+    required_inventory
+    - current_inventory
+)
+
+if inventory_gap > 0:
+
+    inventory_status = "Additional Stock Required"
+
+else:
+
+    inventory_status = "Inventory Sufficient"
+
+inventory_col1, inventory_col2 = st.columns(2)
+
+with inventory_col1:
+
+    st.metric(
+        "Required Inventory",
+        f"{required_inventory} units"
+    )
+
+with inventory_col2:
+
+    st.metric(
+        "Inventory Gap",
+        f"{max(0, inventory_gap)} units"
+    )
+
+st.info(
+    f"**{inventory_status}**"
+)
+# ============================================================
+# UPDATED STOCKOUT RISK
+# ============================================================
+
+st.markdown("### ⚠️ Updated Stockout Risk")
+
+if required_inventory > 0:
+
+    stockout_ratio = (
+        inventory_gap / required_inventory
+    )
+
+else:
+
+    stockout_ratio = 0
+
+stockout_risk = max(
+    0,
+    min(
+        100,
+        round(stockout_ratio * 100)
+    )
+)
+
+if stockout_risk >= 70:
+
+    risk_level = "High"
+
+elif stockout_risk >= 40:
+
+    risk_level = "Medium"
+
+else:
+
+    risk_level = "Low"
+
+risk_col1, risk_col2 = st.columns(2)
+
+with risk_col1:
+
+    st.metric(
+        "Stockout Risk",
+        f"{stockout_risk}%"
+    )
+
+with risk_col2:
+
+    st.metric(
+        "Risk Level",
+        risk_level
+    )
+
+st.progress(
+    stockout_risk / 100
+)
+# ============================================================
+# SCENARIO RECOMMENDATION
+# ============================================================
+
+st.markdown("### 💡 Scenario Recommendation")
+
+if stockout_risk >= 70:
+
+    recommendation = (
+        "High stockout risk detected. "
+        "Increase inventory and prioritize replenishment."
+    )
+
+elif stockout_risk >= 40:
+
+    recommendation = (
+        "Moderate stockout risk. "
+        "Monitor inventory and consider early replenishment."
+    )
+
+else:
+
+    recommendation = (
+        "Low stockout risk. "
+        "Current inventory appears sufficient for the scenario."
+    )
+
+st.success(
+    f"**Recommendation:** {recommendation}"
+)
 
 # ============================================================
 # ACTUAL VS FORECAST
