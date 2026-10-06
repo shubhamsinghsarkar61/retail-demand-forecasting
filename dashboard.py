@@ -857,6 +857,195 @@ else:
 st.success(
     f"**Recommendation:** {recommendation}"
 )
+# ============================================================
+# PRODUCT PRIORITY
+# ============================================================
+
+st.markdown("### 🎯 Product Priority")
+
+priority_score = min(
+    100,
+    round(
+        (stockout_risk * 0.6)
+        + (min(demand_change, 100) * 0.4)
+    )
+)
+
+if priority_score >= 70:
+
+    priority_status = "🔴 High Priority"
+
+elif priority_score >= 40:
+
+    priority_status = "🟡 Medium Priority"
+
+else:
+
+    priority_status = "🟢 Low Priority"
+
+priority_col1, priority_col2 = st.columns(2)
+
+with priority_col1:
+
+    st.metric(
+        "Priority Score",
+        f"{priority_score}/100"
+    )
+
+with priority_col2:
+
+    st.metric(
+        "Priority Status",
+        priority_status
+    )
+    # ============================================================
+# HIGH-RISK IDENTIFICATION
+# ============================================================
+
+st.markdown("### ⚠️ Risk Classification")
+
+if stockout_risk >= 70:
+    risk_status = "🔴 High Risk"
+    risk_message = "Immediate inventory attention required."
+
+elif stockout_risk >= 40:
+    risk_status = "🟡 Medium Risk"
+    risk_message = "Inventory should be monitored closely."
+
+else:
+    risk_status = "🟢 Low Risk"
+    risk_message = "Inventory level is currently under control."
+
+risk_col1, risk_col2 = st.columns(2)
+
+with risk_col1:
+    st.metric(
+        "Risk Status",
+        risk_status
+    )
+
+with risk_col2:
+    st.info(risk_message)
+    # ============================================================
+# OVERSTOCK DETECTION
+# ============================================================
+
+st.markdown("### 📦 Overstock Detection")
+
+overstock_threshold = round(
+    advanced_what_if_demand * 1.5
+)
+
+if current_inventory > overstock_threshold:
+
+    overstock_status = "🔴 Overstock Detected"
+
+    overstock_message = (
+        f"Current inventory is approximately "
+        f"{current_inventory - overstock_threshold} units "
+        f"above the recommended threshold."
+    )
+
+else:
+
+    overstock_status = "🟢 No Overstock"
+
+    overstock_message = (
+        "Current inventory is within the recommended range."
+    )
+
+overstock_col1, overstock_col2 = st.columns(2)
+
+with overstock_col1:
+
+    st.metric(
+        "Overstock Status",
+        overstock_status
+    )
+
+with overstock_col2:
+
+    st.info(overstock_message)
+    # ============================================================
+# RECOMMENDED ACTION
+# ============================================================
+
+st.markdown("### 💡 Recommended Action")
+
+if stockout_risk >= 70:
+
+    recommended_action = (
+        "🚨 Increase inventory immediately and "
+        "prioritize replenishment."
+    )
+
+elif stockout_risk >= 40:
+
+    recommended_action = (
+        "⚠️ Monitor inventory closely and "
+        "consider early replenishment."
+    )
+
+elif current_inventory > overstock_threshold:
+
+    recommended_action = (
+        "📦 Reduce excess inventory and "
+        "avoid unnecessary replenishment."
+    )
+
+else:
+
+    recommended_action = (
+        "✅ Maintain current inventory levels "
+        "and continue regular monitoring."
+    )
+
+st.success(
+    f"**Recommended Action:** {recommended_action}"
+)
+# ============================================================
+# INVENTORY ACTION SUMMARY
+# ============================================================
+
+st.markdown("### 📊 Inventory Action Summary")
+
+summary_col1, summary_col2, summary_col3 = st.columns(3)
+
+with summary_col1:
+
+    st.metric(
+        "Priority Score",
+        f"{priority_score}/100"
+    )
+
+with summary_col2:
+
+    st.metric(
+        "Stockout Risk",
+        f"{stockout_risk}%"
+    )
+
+with summary_col3:
+
+    if current_inventory > overstock_threshold:
+        inventory_condition = "Overstock"
+    elif inventory_gap > 0:
+        inventory_condition = "Shortage"
+    else:
+        inventory_condition = "Balanced"
+
+    st.metric(
+        "Inventory Condition",
+        inventory_condition
+    )
+
+st.info(
+    f"**Action Summary:** "
+    f"{priority_status} | "
+    f"{risk_status} | "
+    f"{inventory_condition}"
+)
+
 
 # ============================================================
 # ACTUAL VS FORECAST
