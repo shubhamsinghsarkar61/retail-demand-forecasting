@@ -587,10 +587,8 @@ what_if_demand = (
     * promotion_effect
 )
 
-what_if_demand = max(
-    0,
-    round(what_if_demand)
-)
+what_if_demand = max(0,
+    what_if_demand)
 
 st.markdown("### 📊 Scenario Result")
 
@@ -607,7 +605,7 @@ with result_col2:
 
     st.metric(
         "What-If Forecast",
-        f"{what_if_demand} units"
+        f"{what_if_demand:.2f} units" 
     )
     # ============================================================
 # WHAT-IF FORECAST COMPARISON
