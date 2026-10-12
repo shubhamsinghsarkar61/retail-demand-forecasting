@@ -566,7 +566,7 @@ with scenario_col2:
 
     promotion_impact = st.slider(
         "📢 Promotion Impact (%)",
-        min_value=0,
+        min_value=-50,
         max_value=50,
         value=0,
         step=5
