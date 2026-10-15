@@ -566,7 +566,7 @@ with scenario_col2:
 
     promotion_impact = st.slider(
         "📢 Promotion Impact (%)",
-        min_value=0,
+        min_value=-50,
         max_value=50,
         value=0,
         step=5
@@ -587,10 +587,8 @@ what_if_demand = (
     * promotion_effect
 )
 
-what_if_demand = max(
-    0,
-    round(what_if_demand)
-)
+what_if_demand = max(0,
+    what_if_demand)
 
 st.markdown("### 📊 Scenario Result")
 
@@ -607,7 +605,7 @@ with result_col2:
 
     st.metric(
         "What-If Forecast",
-        f"{what_if_demand} units"
+        f"{what_if_demand:.2f} units" 
     )
     # ============================================================
 # WHAT-IF FORECAST COMPARISON
